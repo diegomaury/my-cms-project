@@ -18,14 +18,21 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader']
+        use: ['style-loader', 'css-loader', 'postcss-loader']
       }
     ]
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './src/index.html'
+      template: './src/index.html'  // This is correct now
     })
   ],
-  mode: 'development'
+  mode: 'development',
+  devServer: {
+    static: {
+      directory: path.join(__dirname, 'src'),  // Changed to 'src'
+    },
+    compress: true,
+    port: 8080,
+  }
 };
