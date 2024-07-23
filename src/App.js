@@ -4,6 +4,7 @@ import CMSLayout from './components/CMSLayout';
 function App() {
   const [posts, setPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetch('/api/data')
@@ -14,21 +15,31 @@ function App() {
         return response.json();
       })
       .then(data => {
-        const formattedPosts = data.map(post => ({
-          id: post.id,
-          banner: post.properties.Banner?.files[0]?.file?.url || '',
-          name: post.properties.NameDiego?.title[0]?.plain_text || 'Untitled',
-          summary: post.properties.ResumenDiego?.rich_text[0]?.plain_text || 'No summary',
-          tags: post.properties.TagsDiego?.multi_select.map(tag => tag.name) || []
-        }));
+        console.log('Raw data:', data); // Log raw data
+        const formattedPosts = data.map(post => {
+          console.log('Processing post:', post); // Log each post
+          return {
+            id: post.id,
+            banner: post.properties?.Banner?.files?.[0]?.file?.url || '',
+            name: post.properties?.NameDiego?.title?.[0]?.plain_text || 'Untitled',
+            summary: post.properties?.ResumenDiego?.rich_text?.[0]?.plain_text || 'No summary',
+            tags: post.properties?.TagsDiego?.multi_select?.map(tag => tag.name) || []
+          };
+        });
+        console.log('Formatted posts:', formattedPosts); // Log formatted posts
         setPosts(formattedPosts);
         setIsLoading(false);
       })
       .catch(error => {
         console.error('Error fetching data:', error);
+        setError(error.message);
         setIsLoading(false);
       });
   }, []);
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <CMSLayout>

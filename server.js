@@ -1,20 +1,21 @@
-require('dotenv').config(); // This should be at the top of your server.js
+require('dotenv').config();
 const express = require('express');
-const { getDatabase } = require('./src/notion');
+const { getDatabase } = require('./notionClient');
 
 const app = express();
 const port = process.env.PORT || 3000;
 
-app.get('/api/data', async (req, res) => {
+app.get('/data', async (req, res) => {
   try {
-    const data = await getDatabase();
-    res.json(data);
+    const databaseData = await getDatabase();
+    console.log('Database data:', databaseData); // Agrega este console.log
+    res.json(databaseData);
   } catch (error) {
-    console.error('Error in /api/data route:', error);
-    res.status(500).json({ error: 'Failed to fetch data from Notion' });
+    console.error('Error fetching data from Notion:', error);
+    res.status(500).send('Error fetching data from Notion');
   }
 });
 
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server running on port ${port}`);
 });
